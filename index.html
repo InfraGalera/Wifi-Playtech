@@ -44,10 +44,6 @@ ol{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:10px}
 li::marker{color:var(--accent);font-weight:800}
 kbd{font-family:var(--mono);font-size:13px;background:var(--code-bg);border:1px solid var(--line);border-radius:5px;padding:1px 6px}
 .note{font-size:14px;color:var(--muted);border-top:1px solid var(--line);padding-top:14px;margin-top:16px}
-details summary{cursor:pointer;font-weight:800}
-.codebox{margin-top:14px;display:flex;flex-direction:column;gap:10px}
-pre{margin:0;background:var(--code-bg);border:1px solid var(--line);border-radius:10px;padding:14px;overflow-x:auto;font-family:var(--mono);font-size:12.5px;line-height:1.5;max-height:340px}
-.codebar{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 body{margin:0}
 </style>
@@ -86,74 +82,10 @@ body{margin:0}
     <p class="note">A rede fica salva com conexão automática. Da próxima vez, o notebook conecta sozinho quando estiver no alcance.</p>
   </section>
 
-  <section class="card">
-    <details id="code-details">
-      <summary>O download não funcionou? Crie o arquivo manualmente</summary>
-      <div class="codebox">
-        <ol>
-          <li>Copie o código abaixo.</li>
-          <li>Abra o <strong>Bloco de Notas</strong> e cole.</li>
-          <li>Vá em <kbd>Arquivo</kbd> → <kbd>Salvar como</kbd>, escolha o tipo <strong>Todos os arquivos</strong> e salve como <strong>conectar_wifi.bat</strong>.</li>
-        </ol>
-        <div class="codebar">
-          <button class="ghost" id="btn-copy" type="button">Copiar código</button>
-          <span class="status" id="copy-status" role="status"></span>
-        </div>
-        <pre id="code">@echo off
-setlocal
-chcp 65001 &gt;nul
-
-set "SSID=wifi-Playtech-SP"
-set "SENHA=xo11tzPlk4n4"
-set "PERFIL=%TEMP%\wifi_perfil.xml"
-
-echo Criando perfil da rede %SSID%...
-(
-echo ^&lt;?xml version="1.0"?^&gt;
-echo ^&lt;WLANProfile xmlns="http://www.microsoft.com/networking/WLAN/profile/v1"^&gt;
-echo   ^&lt;name^&gt;%SSID%^&lt;/name^&gt;
-echo   ^&lt;SSIDConfig^&gt;^&lt;SSID^&gt;^&lt;name^&gt;%SSID%^&lt;/name^&gt;^&lt;/SSID^&gt;^&lt;/SSIDConfig^&gt;
-echo   ^&lt;connectionType^&gt;ESS^&lt;/connectionType^&gt;
-echo   ^&lt;connectionMode^&gt;auto^&lt;/connectionMode^&gt;
-echo   ^&lt;MSM^&gt;^&lt;security^&gt;
-echo     ^&lt;authEncryption^&gt;
-echo       ^&lt;authentication^&gt;WPA2PSK^&lt;/authentication^&gt;
-echo       ^&lt;encryption^&gt;AES^&lt;/encryption^&gt;
-echo       ^&lt;useOneX^&gt;false^&lt;/useOneX^&gt;
-echo     ^&lt;/authEncryption^&gt;
-echo     ^&lt;sharedKey^&gt;
-echo       ^&lt;keyType^&gt;passPhrase^&lt;/keyType^&gt;
-echo       ^&lt;protected^&gt;false^&lt;/protected^&gt;
-echo       ^&lt;keyMaterial^&gt;%SENHA%^&lt;/keyMaterial^&gt;
-echo     ^&lt;/sharedKey^&gt;
-echo   ^&lt;/security^&gt;^&lt;/MSM^&gt;
-echo ^&lt;/WLANProfile^&gt;
-) &gt; "%PERFIL%"
-
-netsh wlan add profile filename="%PERFIL%" user=current
-del /q "%PERFIL%"
-
-echo Conectando...
-netsh wlan connect name="%SSID%" ssid="%SSID%"
-
-timeout /t 5 /nobreak &gt;nul
-netsh wlan show interfaces | findstr /i "SSID Estado State"
-
-pause
-endlocal
-</pre>
-      </div>
-    </details>
-  </section>
 </main>
 
 <script>
 function setStatus(el,msg,cls){el.textContent=msg;el.className="status"+(cls?" "+cls:"");}
-document.getElementById("btn-copy").addEventListener("click", ()=>{
-  const pre=document.getElementById("code"), st=document.getElementById("copy-status");
-  const fallback=()=>{const r=document.createRange();r.selectNodeContents(pre);const s=getSelection();s.removeAllRanges();s.addRange(r);setStatus(st,"Código selecionado. Pressione Ctrl+C para copiar.");};
-  try{ navigator.clipboard.writeText(pre.textContent).then(()=>setStatus(st,"Código copiado.","ok"),fallback); }catch(e){ fallback(); }
-});
 </script>
 </body>
 </html>
